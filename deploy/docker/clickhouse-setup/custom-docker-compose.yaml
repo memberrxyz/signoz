@@ -43,13 +43,6 @@ x-db-depend: &db-depend
 
 services:
 
-  debug-path:
-    image: busybox
-    command: sh -c 'echo "Current working directory:" && pwd && echo "\nDirectory contents:" && ls -la'
-    volumes:
-      - .:/workspace
-    working_dir: /workspace
-
   hotrod:
     image: jaegertracing/example-hotrod:1.30
     container_name: hotrod
@@ -131,20 +124,34 @@ services:
     <<: *clickhouse-defaults
     container_name: signoz-clickhouse
     hostname: clickhouse
-    depends_on:
-      - debug-path
     ports:
       - "9000:9000"
       - "8123:8123"
       - "9181:9181"
     volumes:
-      - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
-      - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
-      - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml
-      - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
-      # - ./clickhouse-storage.xml:/etc/clickhouse-server/config.d/storage.xml
-      - ./data/clickhouse/:/var/lib/clickhouse/
-      - ./user_scripts:/var/lib/clickhouse/user_scripts/
+      # Ensure host paths exist and are correct type
+      - type: bind
+        source: ./clickhouse-config.xml
+        target: /etc/clickhouse-server/config.xml
+        read_only: true
+      - type: bind
+        source: ./clickhouse-users.xml
+        target: /etc/clickhouse-server/users.xml
+        read_only: true
+      - type: bind
+        source: ./custom-function.xml
+        target: /etc/clickhouse-server/custom-function.xml
+        read_only: true
+      - type: bind
+        source: ./clickhouse-cluster.xml
+        target: /etc/clickhouse-server/config.d/cluster.xml
+        read_only: true
+      - type: volume
+        source: clickhouse_data
+        target: /var/lib/clickhouse
+      - type: bind
+        source: ./user_scripts
+        target: /var/lib/clickhouse/user_scripts
 
   # clickhouse-2:
   #   <<: *clickhouse-defaults
@@ -329,3 +336,6 @@ services:
     depends_on:
       - otel-collector
     restart: on-failure
+
+volumes:
+  clickhouse_data:
