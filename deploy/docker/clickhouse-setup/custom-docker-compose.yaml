@@ -128,13 +128,13 @@ services:
       - "8123:8123"
       - "9181:9181"
     volumes:
-      - ${PWD}/clickhouse-config.xml:/etc/clickhouse-server/config.xml
-      - ${PWD}/clickhouse-users.xml:/etc/clickhouse-server/users.xml
-      - ${PWD}/custom-function.xml:/etc/clickhouse-server/custom-function.xml
-      - ${PWD}/clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
+      - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
+      - ./custom-function.xml:/etc/clickhouse-server/custom-function.xml
+      - ./clickhouse-cluster.xml:/etc/clickhouse-server/config.d/cluster.xml
       # - ./clickhouse-storage.xml:/etc/clickhouse-server/config.d/storage.xml
-      - ${PWD}/data/clickhouse/:/var/lib/clickhouse/
-      - ${PWD}/user_scripts:/var/lib/clickhouse/user_scripts/
+      - ./data/clickhouse/:/var/lib/clickhouse/
+      - ./user_scripts:/var/lib/clickhouse/user_scripts/
 
   # clickhouse-2:
   #   <<: *clickhouse-defaults
