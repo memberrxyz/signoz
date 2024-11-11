@@ -42,6 +42,14 @@ x-db-depend: &db-depend
     #   condition: service_healthy
 
 services:
+
+  debug-path:
+    image: busybox
+    command: sh -c 'echo "Current working directory:" && pwd && echo "\nDirectory contents:" && ls -la'
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+
   hotrod:
     image: jaegertracing/example-hotrod:1.30
     container_name: hotrod
@@ -123,6 +131,8 @@ services:
     <<: *clickhouse-defaults
     container_name: signoz-clickhouse
     hostname: clickhouse
+    depends_on:
+      - debug-path
     ports:
       - "9000:9000"
       - "8123:8123"
